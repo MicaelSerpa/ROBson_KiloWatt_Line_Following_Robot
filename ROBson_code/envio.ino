@@ -47,7 +47,7 @@ void envio_dados() {
   SerialBT.print(" ");
 
 
-
+////////////////////
   SerialBT.print(erro);
   SerialBT.print(" ");
   SerialBT.println(velMedia);
