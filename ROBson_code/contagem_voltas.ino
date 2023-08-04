@@ -25,14 +25,14 @@ bool controle_voltas(bool estado_ponteH, bool pulso) {
 
   }
 
-    if (cont_volta >= 2) {
-  
-  estado_ponteH = !estado_ponteH;
-   estado_B0 = !estado_B0;
-  
-      controle_ponteH = 0;
-  
-    }
+//    if (cont_volta >= 2) {
+//  
+//  estado_ponteH = !estado_ponteH;
+//   estado_B0 = !estado_B0;
+//  
+//      controle_ponteH = 0;
+//  
+//    }
 
   return controle_ponteH;
 

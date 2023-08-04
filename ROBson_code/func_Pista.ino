@@ -7,49 +7,17 @@ void rotinaPista() {
 }
 
 void rotinaPID() {
+
   rotinaPista();
 
-  //////////
+  float sOutFloat = static_cast<float>(sOut);
+  float sOutOffset = sOutFloat - 50.0;
 
-  if (sOut == 50) {
-
-    velMedia = 255;//90/padrao 95 // 210
-    K = 0.7;//padrao 1.7
-
-
-  }
-
-
-  if ((sOut >= 47 && sOut <= 50) || (sOut >= 50 && sOut <= 53)) {
-
-    velMedia = 240;//90/padrao 95 // 210 200
-    K = 0.7;//padrao 1.7
-
-
-  }
-
-  if ((sOut >= 45 && sOut < 47) || (sOut > 53 && sOut <= 55)) {
-
-    velMedia = 190;//90/padrao 95 140 160
-    K = 1.7;//padrao 1.7
-
-
-  }
-
-
-  else {
-
-    velMedia = 90; //padrao 60// 95// 130
-    K = 2.7; //padrao 3.0
-//K = 2 + 0.05 * sOut;
-
-  }
-  /////////
+  velMedia = constrain(255 - 3 * abs(sOutOffset), 60, 100);
+  K = 0.7 + 0.4 * abs(sOutOffset) / 5.0;
 
   erro = ref - sOut;
-
   P = K * erro;
-  //eI = I_ant + K * T * (erro + erro_ant) / (2 * T_i);
   D = D_ant * (2 - p * T) / (2 + p * T) + 2 * p * K * T_d / (2 + p * T) * (erro - erro_ant);
 
   sinal_controle = P + I + D;
@@ -60,7 +28,6 @@ void rotinaPID() {
 
   controleEsquerda = velMedia + sinal_controle;
   controleDireita = velMedia - sinal_controle;
-
 
   leitura_B0 = leitura_B0 << 1;
   leitura_B0 = leitura_B0 | digitalRead(B0);

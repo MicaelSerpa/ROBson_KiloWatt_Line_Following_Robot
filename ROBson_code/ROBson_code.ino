@@ -2,6 +2,12 @@
 //bibliotecas
 //#include <analogWrite.h>
 #include "BluetoothSerial.h"
+#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include <esp_task_wdt.h>
+
+#define WDT_TIMEOUT 300000
 
 //-------------------------------------------------------------------------------------------------------------------------------
 //definiçoes de porta
@@ -34,16 +40,16 @@
 //constantes e variaveis
 
 //constantes motor
-int VEL_MAX = 255;
-int VEL_MAX_NEG = 255;
-int ZONA_MORTA = 80;
+volatile int VEL_MAX = 255;
+volatile int VEL_MAX_NEG = 255;
+volatile int ZONA_MORTA = 80;
 
 
 //Parametros PID
-int velMedia = 75; //45//50//70/80/90//100//98 padrão era 65
-float K = 2.8;  //1.2//1.3//1.7//1.9//1.9//1.9
-float T_i = 0.1;//0
-float T_d = 0.035;//0.004//0.035//0.1/0.004/0.15//0.25//0.13 padrao 0.022// 0.035
+volatile int velMedia = 75; //45//50//70/80/90//100//98 padrão era 65
+volatile float K = 2.8;  //1.2//1.3//1.7//1.9//1.9//1.9
+volatile float T_i = 0.1;//0
+volatile float T_d = 0.035;//0.004//0.035//0.1/0.004/0.15//0.25//0.13 padrao 0.022// 0.035
 
 //constantes PID
 #define T 0.001
@@ -52,30 +58,30 @@ float T_d = 0.035;//0.004//0.035//0.1/0.004/0.15//0.25//0.13 padrao 0.022// 0.03
 #define ref 50
 
 
-bool controle_LED = 1;
+volatile bool controle_LED = 1;
 
 
 //Variaveis PID
-float P = 0;
-float I = 0, I_ant = 0;
-float D = 0, D_ant = 0;
-float erro, erro_ant;
-float controleEsquerda, controleDireita, sinal_controle;
-int sensorMax = 1, sensorMaxAnt = 1;
-int valorMax = 0;
+volatile float P = 0;
+volatile float I = 0, I_ant = 0;
+volatile float D = 0, D_ant = 0;
+volatile float erro, erro_ant;
+volatile float controleEsquerda, controleDireita, sinal_controle;
+volatile int sensorMax = 1, sensorMaxAnt = 1;
+volatile int valorMax = 0;
 volatile int flagTimer = 0;
-long timer_tempo;
+volatile long timer_tempo;
 
 //Variaveis leitura de sensores
-int s[4], sOut, sOut_ant = 0;
+volatile int s[4], sOut, sOut_ant = 0;
 
 //Calibração de sensores
 //int s_min[4] = { 2128, 1643, 1930, 2158}, s_max[4] = {4095, 4095, 4095, 4095}; //guarda os valores maximos e minimos de preto e branco
-int s_min[4] = {100, 100, 100, 100}, s_max[4] = {3400, 2900, 2900, 3400};
+volatile int s_min[4] = {100, 100, 100, 100}, s_max[4] = {3400, 2900, 2900, 3400};
 
 //int s_min[4] = { 858, 854, 854, 818}, s_max[4] = {2112, 1857, 2107, 2137}; //guarda os valores maximos e minimos de preto e branco
 
-float dif[4];
+volatile float dif[4];
 
 const int Sconst = 35;
 
@@ -115,7 +121,7 @@ void setup() {
   }
 
   Serial.begin(57600);
-  SerialBT.begin("Robson quiloWatt"); //Bluetooth device name
+  SerialBT.begin("Robson KiloWatt"); //Bluetooth device name
 
   //Declaraçao de portas
   // pinMode(B1, INPUT_PULLUP);
@@ -140,28 +146,47 @@ void setup() {
   pinMode(B0, INPUT_PULLUP);
 
 
-  timer = timerBegin(0, 80, true);
-  timerAttachInterrupt(timer, &funcTimer, true);
-  timerAlarmWrite(timer, tempo_int, true);
-  timerAlarmEnable(timer);
+  //  timer = timerBegin(0, 80, true);
+  //  timerAttachInterrupt(timer, &funcTimer, true);
+  //  timerAlarmWrite(timer, tempo_int, true);
+  //  timerAlarmEnable(timer);
 
   //Inciando o timer para o PID começar a funcionar
+
+  esp_task_wdt_init(WDT_TIMEOUT, true); //enable panic so ESP32 restarts
+  esp_task_wdt_add(NULL); //add current thread to WDT watch
+
+
+
+  // Cria uma tarefa no Core 0 para incrementar a variável compartilhada
+  xTaskCreatePinnedToCore(taskCore0, "TaskCore0", 10000, NULL, 1, NULL, 0);
+
+  // Cria uma tarefa no Core 1 para imprimir o valor da variável
+  //xTaskCreatePinnedToCore(taskCore1, "TaskCore1", 10000, NULL, 1, NULL, 1);
 
 }
 float Flag = 0;
 void loop() {
 
-  if (millis() - timer_tempo > 300) {
-    timer_tempo = millis();
-    envio_dados();
-  }
 
-  if (flagTimer == 1) {
-    //Rotina que realiza o PID
-    rotinaPID();
-    //Retorna a flag para zero, assim so entra na condição novamente quando a interrupção de timer rodar
-    flagTimer = 0;
-  }
+ portENTER_CRITICAL(&mux);
+
+    if (xTaskGetTickCount() - timer_tempo > 500) {
+      timer_tempo = xTaskGetTickCount();
+      envio_dados();
+      receber();
+
+    }
+    esp_task_wdt_reset();
+    portEXIT_CRITICAL(&mux);
+
+ 
+  // if (flagTimer == 1) {
+  //Rotina que realiza o PID
+
+  //Retorna a flag para zero, assim so entra na condição novamente quando a interrupção de timer rodar
+  //  flagTimer = 0;
+  // }
 
 
 
