@@ -2,7 +2,7 @@
 void processReceivedData(String data) {
   int separatorIndex1 = data.indexOf(';'); // Encontra o índice do primeiro separador ';'
   int separatorIndex2 = data.indexOf(';', separatorIndex1 + 1); // Encontra o índice do segundo separador ';'
-  
+
   if (separatorIndex1 == -1 || separatorIndex2 == -1) {
     Serial.println("Formato de dados inválido!"); // Verifica se os separadores foram encontrados
     return;
@@ -25,13 +25,13 @@ void processReceivedData(String data) {
 
 void receber() {
 
-if (SerialBT.available() > 0) { // Verifica se há dados disponíveis na porta serial
+  if (SerialBT.available() > 0) { // Verifica se há dados disponíveis na porta serial
     String receivedData = SerialBT.readStringUntil('@'); // Lê os dados até encontrar o caractere '@'
     processReceivedData(receivedData); // Chama a função para processar os dados recebidos
   }
 
 
- 
+
 }
 
 
@@ -69,15 +69,28 @@ void envio_dados() {
   //  Serial.println(" ");
 
 
-  SerialBT.print(s[0]);
-  SerialBT.print(" ");
-  SerialBT.print(s[1]);
-  SerialBT.print(" ");
-  SerialBT.print(s[2]);
-  SerialBT.print(" ");
-  SerialBT.print(s[3]);
-  SerialBT.print(" ");
+  //  SerialBT.print(s[0]);
+  //  SerialBT.print(" ");
+  //  SerialBT.print(s[1]);
+  //  SerialBT.print(" ");
+  //  SerialBT.print(s[2]);
+  //  SerialBT.print(" ");
+  //  SerialBT.print(s[3]);
+  //  SerialBT.print(" ");
 
+  Serial.print(analogRead(tcrt1));
+  Serial.print(" ");
+  Serial.print(analogRead(tcrt2));
+  Serial.print(" ");
+  Serial.print(analogRead(tcrt3));
+  Serial.print(" ");
+  Serial.print(analogRead(tcrt4));
+  Serial.print(" ");
+
+  Serial.println(sOut);
+
+
+  //
   SerialBT.print(analogRead(tcrt1));
   SerialBT.print(" ");
   SerialBT.print(analogRead(tcrt2));
@@ -85,16 +98,14 @@ void envio_dados() {
   SerialBT.print(analogRead(tcrt3));
   SerialBT.print(" ");
   SerialBT.print(analogRead(tcrt4));
-  SerialBT.print(" ");
-
-
-  ////////////////////
-  SerialBT.print(erro);
-  SerialBT.print(" ");
-  SerialBT.println(velMedia);
-
-
-
+  SerialBT.println(" ");
+  //
+  //
+  //  ////////////////////
+  //  SerialBT.print(erro);
+  //  SerialBT.print(" ");
+  //  SerialBT.println(velMedia);
+  // SerialBT.println(K);
 
 
 

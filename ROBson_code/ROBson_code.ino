@@ -1,3 +1,4 @@
+
 //-------------------------------------------------------------------------------------------------------------------------------
 //bibliotecas
 //#include <analogWrite.h>
@@ -6,8 +7,11 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <esp_task_wdt.h>
+#include <Filters.h>//Filtro para remover as variações do sinal analógico
 
 #define WDT_TIMEOUT 300000
+
+FilterOnePole filtro(LOWPASS, 10); // cria um objeto da classe FilterOnePole chamado filtro_passa_baixas USADO PARA O ACELERADOR
 
 //-------------------------------------------------------------------------------------------------------------------------------
 //definiçoes de porta
@@ -40,9 +44,9 @@
 //constantes e variaveis
 
 //constantes motor
-volatile int VEL_MAX = 255;
-volatile int VEL_MAX_NEG = 255;
-volatile int ZONA_MORTA = 80;
+volatile int VEL_MAX = 255;//100 3.95V 9.86V          ///80 4.01V  9.85V
+volatile int VEL_MAX_NEG = 255;//100
+volatile int ZONA_MORTA = 240; //180 220 240
 
 
 //Parametros PID
@@ -75,11 +79,12 @@ volatile long timer_tempo;
 //Variaveis leitura de sensores
 volatile int s[4], sOut, sOut_ant = 0;
 
-//Calibração de sensores
-//int s_min[4] = { 2128, 1643, 1930, 2158}, s_max[4] = {4095, 4095, 4095, 4095}; //guarda os valores maximos e minimos de preto e branco
-volatile int s_min[4] = {100, 100, 100, 100}, s_max[4] = {3400, 2900, 2900, 3400};
 
-//int s_min[4] = { 858, 854, 854, 818}, s_max[4] = {2112, 1857, 2107, 2137}; //guarda os valores maximos e minimos de preto e branco
+//volatile int s_min[4] = {200, 200, 200, 200}, s_max[4] = {2200, 1772, 2000, 2600};
+
+volatile int s_min[4] = {3000, 2880, 3194, 2990}, s_max[4] = {3800, 3800, 3800, 3800};
+
+
 
 volatile float dif[4];
 
@@ -169,18 +174,18 @@ float Flag = 0;
 void loop() {
 
 
- portENTER_CRITICAL(&mux);
+  portENTER_CRITICAL(&mux);
 
-    if (xTaskGetTickCount() - timer_tempo > 500) {
-      timer_tempo = xTaskGetTickCount();
-      envio_dados();
-      receber();
+  if (xTaskGetTickCount() - timer_tempo > 500) {
+    timer_tempo = xTaskGetTickCount();
+    envio_dados();
+    receber();
 
-    }
-    esp_task_wdt_reset();
-    portEXIT_CRITICAL(&mux);
+  }
+  esp_task_wdt_reset();
+  portEXIT_CRITICAL(&mux);
 
- 
+
   // if (flagTimer == 1) {
   //Rotina que realiza o PID
 

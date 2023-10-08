@@ -38,14 +38,14 @@ void funcsOut() {
       //Se todos sensores estão fora da linha
       leitura_da_pista = 0;
 
-      sOut = 15;//15
+      sOut = 0;//15 //5
       break;
     }
     if (s[0] < Sconst && s[1] < Sconst && s[2] < Sconst && s[3] > Sconst) {
       //Se todos sensores estão fora da linha
       leitura_da_pista = 0;
 
-      sOut = 85;//85
+      sOut = 100;//85 //95
       break;
     }
 
@@ -80,6 +80,7 @@ void funcsOut() {
       break;
     }
   }
-
+///filtro.input(sOut); //10hz
+  // sOut = filtro.output();
   sOut_ant = sOut;
 }
