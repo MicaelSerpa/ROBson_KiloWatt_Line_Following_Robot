@@ -10,42 +10,31 @@ void rotinaPID() {
 
   rotinaPista();
 
+
   float sOutFloat = static_cast<float>(sOut);
   float sOutOffset = sOutFloat - 50.0;
 
-  velMedia = 110; //sem ajuste padrão 100
+
 
 
 
   if (sOut > 40 && sOut < 60) {
 
 
-    velMedia = 194; //200
+    velMedia = 200; //200
 
-    
+
 
   }
 
   else {
 
-    velMedia = 94; //sem ajuste padrão 100 //110
+    velMedia = 140; //sem ajuste padrão 100 //110 PADRAO 125
   }
 
 
-
-  //  velMedia = constrain(2.0 * abs(sOutOffset), 100 , 255);
-  //  velMedia = (10.0 * abs(sOutOffset)) + 1;
-
-
- //  K = 2.9;
-
-
-
- 
-  
-  K = 0.9 + 0.4 * abs(sOutOffset) / 5.0; //5.0
-  K = constrain(K, 0.9, 7.5);
-
+//  K = 0.9 + 0.4 * abs(sOutOffset) / 5.0; //5.0
+//  K = constrain(K, 0.9, 7.5);
 
 
   erro = ref - sOut;

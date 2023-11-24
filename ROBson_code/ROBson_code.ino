@@ -44,16 +44,16 @@ FilterOnePole filtro(LOWPASS, 10); // cria um objeto da classe FilterOnePole cha
 //constantes e variaveis
 
 //constantes motor
-volatile int VEL_MAX = 255;//100 3.95V 9.86V          ///80 4.01V  9.85V
-volatile int VEL_MAX_NEG = 255;//100
-volatile int ZONA_MORTA = 240; //180 220 240
+volatile int VEL_MAX = 100;//100 3.95V 9.86V          ///80 4.01V  9.85V
+volatile int VEL_MAX_NEG = 100;//100
+volatile int ZONA_MORTA = 170; //180 220 240 190 PADRAO 80 RODA PEQUENA GRande 120
 
 
 //Parametros PID
-volatile int velMedia = 75; //45//50//70/80/90//100//98 padrão era 65
-volatile float K = 2.8;  //1.2//1.3//1.7//1.9//1.9//1.9
+volatile int velMedia = 80; //45//50//70/80/90//100//98 padrão era 120
+volatile float K = 2.9;  //1.2//1.3//1.7//1.9//1.9//1.9 padrao 2.9
 volatile float T_i = 0.1;//0
-volatile float T_d = 0.035;//0.004//0.035//0.1/0.004/0.15//0.25//0.13 padrao 0.022// 0.035
+volatile float T_d = 0.09;//0.004//0.035//0.1/0.004/0.15//0.25//0.13 padrao 0.09
 
 //constantes PID
 #define T 0.001
@@ -82,7 +82,7 @@ volatile int s[4], sOut, sOut_ant = 0;
 
 //volatile int s_min[4] = {200, 200, 200, 200}, s_max[4] = {2200, 1772, 2000, 2600};
 
-volatile int s_min[4] = {3000, 2880, 3194, 2990}, s_max[4] = {3800, 3800, 3800, 3800};
+volatile int s_min[4] = {400, 400, 400, 400}, s_max[4] = {2900,2900 , 2600, 2900};
 
 
 
